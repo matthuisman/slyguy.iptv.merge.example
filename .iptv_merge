@@ -1,0 +1,4 @@
+{
+    "playlist": "plugin://$ID?method=playlist&output=$FILE",
+    "epg": "plugin://$ID/?method=epg&output=$FILE"
+}
