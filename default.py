@@ -6,11 +6,11 @@ import xbmcplugin, xbmcgui, xbmcaddon
 
 try:
     #Python3
-    from urllib.parse import parse_qsl, quote
+    from urllib.parse import parse_qsl, quote_plus
 except:
     #Python2
     from urlparse import parse_qsl
-    from urllib import quote
+    from urllib import quote_plus
 
 ADDON = xbmcaddon.Addon()
 
@@ -63,12 +63,14 @@ if method in ('epg', 'playlist'):
             write_epg(params.get('output'))
         elif method == 'playlist':
             write_playlist(params.get('output'))
-    except Exception as e:
-        message = str(e)
-    else:
-        message = 'ok'
 
-    xbmcplugin.addDirectoryItem(handle, quote(message), xbmcgui.ListItem())
+        result = True
+        message = ''
+    except Exception as e:
+        result = False
+        message = str(e)
+
+    xbmcplugin.addDirectoryItem(handle, quote_plus(u'{}{}'.format(int(result), message)), xbmcgui.ListItem())
     xbmcplugin.endOfDirectory(handle, succeeded=True)
 
 elif method == 'play':
