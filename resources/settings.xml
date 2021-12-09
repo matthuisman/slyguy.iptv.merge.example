@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-
+    <category label="Live TV &amp; EPG">
+        <setting label="Setup IPTV Merge" type="action" action="RunPlugin(plugin://plugin.program.iptv.merge/?_=setup_addon&amp;addon_id=$ID)" option="close"/>
+    </category>
 </settings>

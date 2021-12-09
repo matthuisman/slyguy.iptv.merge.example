@@ -30,11 +30,11 @@ channels = {
 epg = {'start': '20210217103000 +0000', 'stop': '20250220103000 +0000', 'title': 'Example EPG', 'desc': 'Example EPG description'}
 
 #EPG_URL = 'https://example.com/epg.xml.gz'
-EPG_URL = "plugin://slyguy.iptv.merge.example/?method=epg&output=$FILE"
+EPG_URL = "plugin://{}/?method=epg&output=$FILE"
 
 def write_playlist(filepath):
     with codecs.open(filepath, 'w', encoding='utf8') as f:
-        f.write(u'#EXTM3U x-tvg-url="{}"'.format(EPG_URL))
+        f.write(u'#EXTM3U x-tvg-url="{}"'.format(EPG_URL.format(ADDON.getAddonInfo('id'))))
 
         for channel_id in channels:
             channel = channels[channel_id]
@@ -84,9 +84,18 @@ elif method == 'play':
     li.setPath(channel['url'])
     xbmcplugin.setResolvedUrl(handle, True, li)
 
+elif method == 'settings':
+    ADDON.openSettings()
+
 else:
-    setup_path = 'plugin://plugin.program.iptv.merge/?_=setup_addon&addon_id=' + ADDON.getAddonInfo('id')
-    li = xbmcgui.ListItem('Add Me to IPTV Merge')
-    li.setPath(setup_path)
-    xbmcplugin.addDirectoryItem(handle, setup_path, li, False)
+    path = 'plugin://plugin.program.iptv.merge/?_=setup_addon&addon_id=' + ADDON.getAddonInfo('id')
+    li = xbmcgui.ListItem('Setup IPTV Merge')
+    li.setPath(path)
+    xbmcplugin.addDirectoryItem(handle, path, li, False)
+
+    path = 'plugin://{}/?method=settings'.format(ADDON.getAddonInfo('id'))
+    li = xbmcgui.ListItem('Settings')
+    li.setPath(path)
+    xbmcplugin.addDirectoryItem(handle, path, li, False)
+
     xbmcplugin.endOfDirectory(handle, succeeded=True)
