@@ -29,15 +29,18 @@ channels = {
 
 epg = {'start': '20210217103000 +0000', 'stop': '20250220103000 +0000', 'title': 'Example EPG', 'desc': 'Example EPG description'}
 
+#EPG_URL = 'https://example.com/epg.xml.gz'
+EPG_URL = "plugin://slyguy.iptv.merge.example/?method=epg&output=$FILE"
+
 def write_playlist(filepath):
     with codecs.open(filepath, 'w', encoding='utf8') as f:
-        f.write(u'#EXTM3U\n')
+        f.write(u'#EXTM3U x-tvg-url="{}"'.format(EPG_URL))
 
         for channel_id in channels:
             channel = channels[channel_id]
             play_path = 'plugin://{}/?method=play&channel_id={}'.format(ADDON.getAddonInfo('id'), channel_id)
-            f.write(u'#EXTINF:-1 tvg-id="{id}" tvg-chno="{chno}" tvg-logo="{logo}",{name}\n{path}\n'.format(
-                        id=channel_id, chno=channel['chno'], logo=channel['logo'], name=channel['name'], path=play_path))
+            f.write(u'\n#EXTINF:-1 tvg-id="{id}" tvg-chno="{chno}" tvg-logo="{logo}",{name}\n{url}'.format(
+                        id=channel_id, chno=channel['chno'], logo=channel['logo'], name=channel['name'], url=play_path))
 
 def write_epg(filepath):
     with codecs.open(filepath, 'w', encoding='utf8') as f:
