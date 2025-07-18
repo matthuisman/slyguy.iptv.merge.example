@@ -1,4 +1,5 @@
 import sys
+import json
 import codecs
 from xml.sax.saxutils import escape
 
@@ -30,18 +31,17 @@ channels = {
 
 epg = {'start': '20210217103000 +0000', 'stop': '20250220103000 +0000', 'title': 'Example EPG', 'desc': 'Example EPG description'}
 
-#EPG_URL = 'https://example.com/epg.xml.gz'
-EPG_URL = "plugin://{}/?method=epg&output=$FILE"
 
 def write_playlist(filepath):
     with codecs.open(filepath, 'w', encoding='utf8') as f:
-        f.write(u'#EXTM3U x-tvg-url="{}"'.format(EPG_URL.format(ADDON_ID)))
+        f.write(u'#EXTM3U')
 
         for channel_id in channels:
             channel = channels[channel_id]
             play_path = 'plugin://{}/?method=play&channel_id={}'.format(ADDON_ID, channel_id)
             f.write(u'\n#EXTINF:-1 tvg-id="{id}" tvg-chno="{chno}" tvg-logo="{logo}",{name}\n{url}'.format(
                         id=channel_id, chno=channel['chno'], logo=channel['logo'], name=channel['name'], url=play_path))
+
 
 def write_epg(filepath):
     with codecs.open(filepath, 'w', encoding='utf8') as f:
@@ -61,6 +61,7 @@ def write_epg(filepath):
 
         f.write(u'</tv>')
 
+
 if method in ('epg', 'playlist'):
     try:
         if method == 'epg':
@@ -68,13 +69,11 @@ if method in ('epg', 'playlist'):
         elif method == 'playlist':
             write_playlist(params.get('output'))
 
-        result = True
-        message = ''
+        data = {'result': True}
     except Exception as e:
-        result = False
-        message = str(e)
+        data = {'error': str(e)}
 
-    xbmcplugin.addDirectoryItem(handle, quote_plus(u'{}{}'.format(int(result), message)), xbmcgui.ListItem())
+    xbmcplugin.addDirectoryItem(handle, quote_plus(json.dumps(data)), xbmcgui.ListItem())
     xbmcplugin.endOfDirectory(handle, succeeded=True)
 
 elif method == 'play':
